@@ -13,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('table_id')->constrained('tables')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->foreignId('cash_register_id')->constrained('cash_registers')->onDelete('restrict');
             $table->decimal('total', 12, 2);
+            $table->enum('status', ['pendiente', 'pagado', 'cancelado'])->default('pendiente')->index();
+            $table->timestamp('paid_at')->nullable()->index();
             $table->enum('payment_method', ['efectivo', 'transferencia'])->default('efectivo');
+            $table->string('paid_by')->nullable();
             $table->timestamps();
         });
     }
