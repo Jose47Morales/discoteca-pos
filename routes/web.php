@@ -121,4 +121,12 @@ Route::get('/debug-laravel', function () {
     }
 });
 
+Route::get('/test-db', function () {
+    try {
+        \DB::connection()->getPdo();
+        return '✅ Conectado correctamente a la base de datos';
+    } catch (\Exception $e) {
+        return '❌ Error de conexión: ' . $e->getMessage();
+    }
+});
 require __DIR__.'/auth.php';
