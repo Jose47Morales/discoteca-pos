@@ -29,6 +29,8 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 
+RUN cp .env.example .env
+
 RUN php artisan key:generate --force \
     && php artisan config:cache \
     && php artisan route:cache \
