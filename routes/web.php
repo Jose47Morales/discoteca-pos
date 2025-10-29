@@ -97,4 +97,28 @@ Route::middleware(['auth', 'role_or_permission:admin|roles.create|roles.read|rol
         Route::resource('roles', RoleController::class);
     });
 
+
+Route::get('/debug-laravel', function () {
+    try {
+        \Artisan::call('config:clear');
+        \Artisan::call('cache:clear');
+        \Artisan::call('view:clear');
+        \Artisan::call('route:clear');
+        return response()->json([
+            'status' => 'ok',
+            'env' => env('APP_ENV'),
+            'debug' => env('APP_DEBUG'),
+            'php_version' => phpversion(),
+            'laravel_version' => app()->version(),
+            'database_connection' => config('database.default'),
+            'app_key_set' => !empty(env('APP_KEY'))
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ], 500);
+    }
+});
+
 require __DIR__.'/auth.php';
