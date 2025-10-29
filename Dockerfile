@@ -1,8 +1,9 @@
-FROM php:8.2-cli as build
+FROM php:8.3-cli as build
 
 RUN apt-get update && apt-get install -y \
-    git unzip zip libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip
+    git unzip zip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libxml2-dev libpq-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -14,7 +15,7 @@ RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --opti
 
 COPY . .
 
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 RUN a2enmod rewrite
 
