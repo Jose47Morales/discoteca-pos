@@ -6,16 +6,18 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql zip
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /app
 
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader
+
 COPY . .
 
 FROM php:8.3-apache
 
 RUN a2enmod rewrite
-WORKDIR /var/www/html
+
 COPY --from=build /app /var/www/html
 
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
@@ -23,13 +25,13 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-RUN cp .env.example .env || true
-
-RUN php artisan key:generate --force || true
-
-ENV APP_ENV=production
+ENV APP_ENV=local
 ENV APP_DEBUG=true
-ENV APP_URL=https://discoteca-pos.onrender.com
+
+RUN cp .env.example .env
+
+RUN php artisan key:generate --force
 
 EXPOSE 80
+
 CMD ["apache2-foreground"]
