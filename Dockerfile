@@ -1,4 +1,4 @@
-FROM php:8.3-cli as build
+FROM php:8.3-cli AS build
 
 RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libxml2-dev libpq-dev \
@@ -10,11 +10,15 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 COPY composer.json composer.lock ./
+
 RUN composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
 COPY . .
 
 FROM php:8.3-apache
+
+RUN apt-get update && apt-get install -y libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
 
 RUN a2enmod rewrite
 
@@ -25,13 +29,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-ENV APP_ENV=local
-ENV APP_DEBUG=true
+ENV APP_ENV=production
+ENV APP_DEBUG=false
 
-RUN cp .env.example .env
+RUN [ -f /var/www/html/.env ] || cp /var/www/html/.env.example /var/www/html/.env
 
-RUN php artisan key:generate --force
+RUN php artisan key:generate --force \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
 
 EXPOSE 80
-
 CMD ["apache2-foreground"]
