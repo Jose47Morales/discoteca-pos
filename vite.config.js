@@ -2,13 +2,10 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-    base: '',
+    base: 'https://discoteca-pos-demo-416284c544d3.herokuapp.com/build/',
     build: {
-        manifest: true,
         outDir: 'public/build',
-        rollupOptions: {
-            input: 'resources/js/app.js',
-        },
+        emptyOutDir: true,
     },
     plugins: [
         laravel({
