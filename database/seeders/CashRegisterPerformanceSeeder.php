@@ -29,34 +29,33 @@ class CashRegisterPerformanceSeeder extends Seeder
         DB::disableQueryLog(); 
 
         //Crear usuarios base (si no existen)
-        if (User::count() < 5) {
-            User::create([
+        if (User::count() < 3) {
+            $admin = User::create([
                 'name' => 'Admin Test',
                 'email' => 'admin@example.test',
                 'password' => Hash::make('password'),
                 'role' => 'admin'
             ]);
-            User::create([
+            
+            $admin->assignRole('admin');
+            
+            $cajero = User::create([
                 'name' => 'Cajero Test',
                 'email' => 'cajero@example.test',
                 'password' => Hash::make('password'),
-                'role' => 'cajero'
+                'role' => 'caja'
             ]);
-            User::create([
+            
+            $cajero->assignRole('cajero');
+            
+            $vendedor = User::create([
                 'name' => 'Vendedor Test',
                 'email' => 'vendedor@example.test',
                 'password' => Hash::make('password'),
                 'role' => 'vendedor'
             ]);
-            // Un par más random
-            for ($i = 0; $i < 2; $i++) {
-                User::create([
-                    'name' => $faker->name,
-                    'email' => 'user'.$i.'@example.test',
-                    'password' => Hash::make('password'),
-                    'role' => $faker->randomElement(['cajero', 'vendedor'])
-                ]);
-            }
+            
+            $vendedor->assignRole('vendedor');
         }
 
         $users = User::all();
