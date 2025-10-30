@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('total', 12, 2);
             $table->enum('status', ['pendiente', 'pagado', 'cancelado'])->default('pendiente')->index();
             $table->timestamp('paid_at')->nullable()->index();
-            $table->enum('payment_method', ['efectivo', 'transferencia'])->default('efectivo');
+            $table->enum('payment_method', ['efectivo', 'transferencia'])->default('efectivo')->nullable;
             $table->string('paid_by')->nullable();
             $table->timestamps();
         });
