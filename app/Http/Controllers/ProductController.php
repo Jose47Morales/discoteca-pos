@@ -13,9 +13,6 @@ class ProductController extends Controller
      */
     public function index()
     {
-        if(Auth::user()->role === 'vendedor'){
-            return redirect()->route('sales.index');
-        }
 
         if(Auth::user()->role !== 'admin'){
             abort(403, 'Acceso denegado');

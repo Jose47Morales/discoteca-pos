@@ -13,10 +13,6 @@ class CashRegisterController extends Controller
 {
     public function index(Request $request)
     {
-        if(Auth::user()->role === 'vendedor'){
-            return redirect()->route('sales.index');
-        }
-
         if (!in_array(Auth::user()->role, ['admin', 'vendedor', 'caja'])) {
             abort(403, 'No tienes permisos para aceder al sistema POS');
         }
