@@ -29,10 +29,9 @@ COPY --from=frontend /app/public ./public
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN cp .env.example .env && php artisan key:generate && \
-    php artisan config:cache && php artisan route:cache && php artisan view:cache
+RUN cp .env.example .env && php artisan key:generate
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD php artisan config:clear && apache2-foreground
