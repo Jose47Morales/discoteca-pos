@@ -1,0 +1,52 @@
+name: discoteca-pos
+builder:
+  type: buildpack
+env:
+  APP_NAME: "Discoteca POS"
+  APP_ENV: production
+  APP_KEY: base64:glHawl852sdmy+sBBCxAUG4/PH9Xi3KAfZmImG3X37M=
+  APP_DEBUG: false
+  APP_URL: https://marxist-merilyn-monkeytech-1c3b856f.koyeb.app
+  SESSION_SECURE_COOKIE: true
+  SESSION_DRIVER: cookie
+  CACHE_DRIVER: file
+  QUEUE_CONNECTION: sync
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: debug
+
+  # Database configuration
+  DB_CONNECTION: mysql
+  DB_HOST: shortline.proxy.rlwy.net
+  DB_PORT: 22951
+  DB_DATABASE: railway
+  DB_USERNAME: root
+  DB_PASSWORD: yCjCePJPgvnPwhkBXzlSouTqegjmjIsc
+
+  # PHP config
+  APP_TIMEZONE: America/Bogota
+
+run:
+  start: |
+    # Install dependencies and optimize application
+    composer install --no-dev --optimize-autoloader
+
+    # Generate key if not set
+    if [ ! -f ".env" ]; then
+      cp .env.example .env
+    fi
+      php artisan key:generate --force
+
+    # Install frontend dependencies and build assets
+    npm install
+    npm run build
+
+    # Optimize application
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+
+    # Execute migrations
+    php artisan migrate --force || true
+
+    # Innitiate the server
+    php artisan serve --host=0.0.0.0 --port=8080
